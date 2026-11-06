@@ -38,6 +38,10 @@ def main() -> int:
     page.paste_spin.setValue(61.6)
     page.concentration_spin.setValue(70.0)
     page.multiplier_spin.setValue(3.1)
+    page.protein_spin.setValue(5.0)
+    page.agent_combo.setCurrentIndex(0)
+    page.agent_concentration_spin.setValue(97.0)
+    page.neutralizer_concentration_spin.setValue(98.0)
     app.processEvents()
 
     output = Path(__file__).resolve().parent.parent / "preview" / "main.png"

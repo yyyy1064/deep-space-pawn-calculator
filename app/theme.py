@@ -222,6 +222,17 @@ QLabel#CardTitle {
     font-weight: 600;
 }
 
+QLabel#SubSectionTitle {
+    color: #C89D55;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+QLabel#SubSectionTag {
+    color: #66758A;
+    font-size: 10px;
+}
+
 QLabel#CardTag {
     color: #C89D55;
     font-size: 10px;
@@ -276,6 +287,40 @@ QDoubleSpinBox::up-button, QDoubleSpinBox::down-button {
     width: 0px;
     border: none;
     background: transparent;
+}
+
+QComboBox {
+    background-color: #0A111C;
+    border: 1px solid #22304A;
+    border-radius: 10px;
+    padding: 7px 12px;
+    color: #F5EEDF;
+    font-size: 15px;
+    min-height: 32px;
+}
+
+QComboBox:hover {
+    border-color: #2E405D;
+}
+
+QComboBox:focus {
+    border: 1px solid #D9A84E;
+    background-color: #0C1521;
+}
+
+QComboBox::drop-down {
+    border: none;
+    width: 24px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #0D1420;
+    border: 1px solid #2A3A52;
+    color: #E9E2D3;
+    padding: 4px;
+    selection-background-color: #2B2417;
+    selection-color: #F4CE8C;
+    outline: none;
 }
 
 QSlider {
