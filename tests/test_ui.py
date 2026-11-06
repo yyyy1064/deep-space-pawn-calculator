@@ -40,6 +40,8 @@ class DreamDustPageTests(unittest.TestCase):
         self.assertEqual(self.page.agent_value.text(), "6.00")
         self.assertEqual(self.page.neutralizer_caption.text(), "中和用酸")
         self.assertEqual(self.page.neutralizer_value.text(), "1.00")
+        self.assertEqual(self.page.target_value.text(), "82.00")
+        self.assertEqual(self.page.target_sub.text(), "中和所需浓度")
         self.assertIn("41 ml 酸 + 8 ml 水", self.page.recipe_label.text())
         self.assertIn("49 ml 82.00%", self.page.recipe_label.text())
         self.assertIn("取 1.00 ml", self.page.recipe_label.text())

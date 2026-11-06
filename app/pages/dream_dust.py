@@ -13,6 +13,7 @@ from PySide6.QtWidgets import (
     QComboBox,
     QDoubleSpinBox,
     QFrame,
+    QGridLayout,
     QHBoxLayout,
     QLabel,
     QScrollArea,
@@ -440,83 +441,48 @@ class DreamDustPage(QWidget):
         box.setSpacing(0)
 
         box.addWidget(self._card_header("计算结果", "02 / RESULT"))
-        box.addSpacing(14)
+        box.addSpacing(12)
 
-        caption = QLabel("所需酒精溶液")
-        caption.setObjectName("ResultCaption")
-        box.addWidget(caption)
-        box.addSpacing(3)
+        grid = QGridLayout()
+        grid.setContentsMargins(0, 0, 0, 0)
+        grid.setHorizontalSpacing(10)
+        grid.setVerticalSpacing(10)
 
-        value_row = QHBoxLayout()
-        value_row.setContentsMargins(0, 0, 0, 0)
-        value_row.setSpacing(8)
-
-        self.result_value = QLabel("0.00")
-        self.result_value.setObjectName("ResultValue")
-        self.result_value.setTextInteractionFlags(
-            Qt.TextInteractionFlag.TextSelectableByMouse
+        solution_box, self.solution_caption, self.solution_value, self.solution_sub = (
+            self._result_stat("所需酒精溶液", "ml", "按 70.00% 酒精折算")
         )
-        value_row.addWidget(self.result_value, 0, Qt.AlignmentFlag.AlignBottom)
+        # 保留旧属性名，方便测试和后续模块引用。
+        self.result_value = self.solution_value
+        self.result_hint = self.solution_sub
 
-        unit = QLabel("ml")
-        unit.setObjectName("ResultUnit")
-        unit.setContentsMargins(0, 0, 0, 10)
-        value_row.addWidget(unit, 0, Qt.AlignmentFlag.AlignBottom)
-        value_row.addStretch(1)
-        box.addLayout(value_row)
-
-        self.result_hint = QLabel("按 70.00% 酒精折算")
-        self.result_hint.setObjectName("ResultHint")
-        box.addWidget(self.result_hint)
-
-        box.addSpacing(8)
-        divider = QFrame()
-        divider.setObjectName("Divider")
-        box.addWidget(divider)
-        box.addSpacing(9)
-
-        stats = QHBoxLayout()
-        stats.setContentsMargins(0, 0, 0, 0)
-        stats.setSpacing(10)
-
-        pure_box, self.pure_value = self._stat_box("纯酒精用量", "ml")
-        self.pure_sub = QLabel("精确 0 ml")
-        self.pure_sub.setObjectName("StatSub")
-        pure_layout = pure_box.layout()
-        if pure_layout is not None:
-            pure_layout.addWidget(self.pure_sub)
-
-        conc_box, self.conc_value = self._stat_box("配制浓度", "%")
-        conc_sub = QLabel("体积浓度")
-        conc_sub.setObjectName("StatSub")
-        conc_layout = conc_box.layout()
-        if conc_layout is not None:
-            conc_layout.addWidget(conc_sub)
-
-        stats.addWidget(pure_box, 1)
-        stats.addWidget(conc_box, 1)
-        box.addLayout(stats)
-
-        box.addSpacing(8)
-        box.addWidget(self._section_title("蛋白质处理", "03 / TREAT"))
-
-        protein_stats = QHBoxLayout()
-        protein_stats.setContentsMargins(0, 4, 0, 0)
-        protein_stats.setSpacing(10)
-
+        pure_box, _, self.pure_value, self.pure_sub = self._result_stat(
+            "纯酒精用量", "ml", "精确 0.00 ml"
+        )
+        conc_box, _, self.conc_value, self.conc_sub = self._result_stat(
+            "配制浓度", "%", "体积浓度"
+        )
         agent_box, self.agent_caption, self.agent_value, self.agent_sub = (
-            self._result_stat("需加入碱", "ml", "实际 0.00 ml")
+            self._result_stat("需加入碱", "ml", "实际 0.00 ml · 剩余 0.00 ml")
         )
         (
             neutralizer_box,
             self.neutralizer_caption,
             self.neutralizer_value,
             self.neutralizer_sub,
-        ) = self._result_stat("中和用酸", "ml", "目标 0.00%")
+        ) = self._result_stat("中和用酸", "ml", "取 0.00 ml 加入")
+        target_box, _, self.target_value, self.target_sub = self._result_stat(
+            "目标浓度", "%", "中和所需浓度"
+        )
 
-        protein_stats.addWidget(agent_box, 1)
-        protein_stats.addWidget(neutralizer_box, 1)
-        box.addLayout(protein_stats)
+        grid.addWidget(solution_box, 0, 0)
+        grid.addWidget(pure_box, 0, 1)
+        grid.addWidget(conc_box, 1, 0)
+        grid.addWidget(agent_box, 1, 1)
+        grid.addWidget(neutralizer_box, 2, 0)
+        grid.addWidget(target_box, 2, 1)
+        grid.setColumnStretch(0, 1)
+        grid.setColumnStretch(1, 1)
+        box.addLayout(grid)
 
         box.addSpacing(6)
         recipe_note, self.recipe_label = self._note(
@@ -559,36 +525,6 @@ class DreamDustPage(QWidget):
         footnote.setWordWrap(True)
         box.addWidget(footnote)
         return card
-
-    def _stat_box(self, label_text: str, unit_text: str) -> tuple[QFrame, QLabel]:
-        frame = QFrame()
-        frame.setObjectName("InnerBox")
-        box = QVBoxLayout(frame)
-        box.setContentsMargins(13, 9, 13, 8)
-        box.setSpacing(3)
-
-        label = QLabel(label_text)
-        label.setObjectName("StatLabel")
-        box.addWidget(label)
-
-        value_row = QHBoxLayout()
-        value_row.setContentsMargins(0, 0, 0, 0)
-        value_row.setSpacing(4)
-
-        value = QLabel("0.00")
-        value.setObjectName("StatValue")
-        value.setTextInteractionFlags(
-            Qt.TextInteractionFlag.TextSelectableByMouse
-        )
-        value_row.addWidget(value, 0, Qt.AlignmentFlag.AlignBottom)
-
-        unit = QLabel(unit_text)
-        unit.setObjectName("StatUnit")
-        unit.setContentsMargins(0, 0, 0, 3)
-        value_row.addWidget(unit, 0, Qt.AlignmentFlag.AlignBottom)
-        value_row.addStretch(1)
-        box.addLayout(value_row)
-        return frame, value
 
     def _result_stat(
         self, caption_text: str, unit_text: str, sub_text: str
@@ -767,8 +703,10 @@ class DreamDustPage(QWidget):
         self.conc_value.setText("—")
         self.agent_value.setText("—")
         self.neutralizer_value.setText("—")
+        self.target_value.setText("—")
         self.agent_sub.setText("请检查输入")
         self.neutralizer_sub.setText("请检查输入")
+        self.target_sub.setText("请检查输入")
         self.recipe_label.setText("请检查输入参数。")
         self.formula_label.setText(
             '<span style="color:#D98B7A;">请检查输入参数。</span>'
@@ -783,20 +721,24 @@ class DreamDustPage(QWidget):
         if treatment.protein_ml == 0:
             self.agent_value.setText("—")
             self.neutralizer_value.setText("—")
+            self.target_value.setText("—")
             self.agent_sub.setText("无需处理")
             self.neutralizer_sub.setText("无需中和")
+            self.target_sub.setText("无需中和")
             self.recipe_label.setText("蛋白质为 0，跳过酸碱处理。")
             return
 
         self.agent_value.setText(f"{treatment.agent_dose_ml:.2f}")
         self.agent_sub.setText(
-            f"实际 {treatment.agent_pure_ml:.2f} ml · "
-            f"剩余 {treatment.residual_ml:.2f} ml"
+            f"纯 {treatment.agent_pure_ml:.2f} / "
+            f"余 {treatment.residual_ml:.2f} ml"
         )
 
         if treatment.residual_ml == 0:
             self.neutralizer_value.setText("—")
+            self.target_value.setText("—")
             self.neutralizer_sub.setText("无需中和")
+            self.target_sub.setText("无需中和")
             self.recipe_label.setText(
                 f"{agent_name}刚好完全反应，无剩余，无需中和。"
             )
@@ -806,8 +748,10 @@ class DreamDustPage(QWidget):
             f"{treatment.neutralizer_dose_ml:.2f}"
         )
         self.neutralizer_sub.setText(
-            f"目标 {treatment.target_percent:.2f}%"
+            f"取 {treatment.neutralizer_dose_ml:.2f} ml 加入"
         )
+        self.target_value.setText(f"{treatment.target_percent:.2f}")
+        self.target_sub.setText("中和所需浓度")
 
         if treatment.diluted:
             self.recipe_label.setText(
